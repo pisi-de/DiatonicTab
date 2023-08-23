@@ -37,6 +37,7 @@
       v1.06.01 : 20200324 version initiale à partie de la version v1.06
       v1.06.02 : 20200326 externalisation des claviers main gauche
       v1.06.04 : 20200406 choix de souligner ou pas les tirés en C.A.D.B.
+      V1.06.05 : 20200623 correctifs méthode Corgeron
 
   Description version v1.02 :
     Pour les accords main gauche A, Am, D, Dm, seules les touches en tirées sont proposées
@@ -83,6 +84,8 @@
   - v1.06.03.20200329.1023 : Modification de l'ordre d'affichage des options à l'écran
   - V1.06.03.20200402.1646 : Mise de la langue dans les parametres
   - V1.06.03.20200406.1051 : Choix de souligner ou pas les Tirés dans le modèle C.A.D.B.
+  - V1.06.04.20200427.1259 : Ajout de l'option Placer D.E.S. au dessous de la Portée
+  - V1.06.05;20200623.0945 : Correction méthode Corgeron
 
   ----------------------------------------------------------------------------*/
 import QtQuick 2.2
@@ -103,7 +106,7 @@ MuseScore {
 
    menuPath: "Plugins.DiatonicTab.Tablature"
    requiresScore: true
-   version: "1.06.04.20200406.1646-Mariano"
+   version: "1.06.05.20230823.2147"
    pluginType: "dialog"
 
    property int margin: 10
@@ -129,6 +132,7 @@ property var parametres: {
          "typeJeu" : 3,               // 1 C privilégié  / 2 G privilégié / 3 Jeu croisé
          "typePossibilite": 2,        // 2 Afficher toutes les possibilités  / 1 n'afficher qu'une seule possibilité
          "typeTablature":  "DES",     // tablature CADB ou Corgeron ou DES (mono ligne)
+         "placerDESDessous" : 1,      // La tabmature DES vas dessous la portée
          "clavierMD"  : {},           // Contenu du clavier main droite
          "clavierMG" : {},            // Contenu du clavier main gauche
          "soulignerTireCADB" : 1,     // Souligner les tirés en C.A.D.B.
@@ -604,7 +608,6 @@ GroupBox {
                       text:  (parametres.lang == "FR") ? qsTr("Position (décalage Y) :") :
                                               qsTr("Position (Y offset)   :")
                   }
-
                   TextField {
                         width:parent.width
                         horizontalAlignment: Qt.AlignRight
@@ -614,6 +617,15 @@ GroupBox {
                         onEditingFinished : {
                              parametres.offsetY.DES = text
                         }
+                  }
+                  CheckBox {
+                      id: cbPlacerDESDessous
+                      width:parent.width
+                      Layout.fillWidth: true
+                      Layout.columnSpan : 2
+                      text: (parametres.lang=="FR")? qsTr("Numéros sous la portée"):
+                                          qsTr("Number under staff")
+                      checked: (parametres.placerDESDessous == "1")
                   }
               } // RowLayout
           } // GroupBox DES
@@ -700,6 +712,7 @@ function memoriseParametres(){
     parametres.offsetY.CorgeronC = inputTextoffsetYCorgeronC.text
     parametres.offsetY.CorgeronG = inputTextoffsetYCorgeronG.text
     parametres.soulignerTireCADB = (cbSoulignerTireCADB.checkedState == Qt.Checked) ? "1" : "0"
+  parametres.placerDESDessous = (cbPlacerDESDessous.checkedState == Qt.Checked)? "1" : "0"
     myParameterFile.write(JSON.stringify(parametres).replace(/,/gi ,",\n"))
 
 }
@@ -737,6 +750,15 @@ function memoriseParametres(){
           textPousse =  newElement(Element.STAFF_TEXT)
           textTire   =  newElement(Element.STAFF_TEXT)
           textAlt    =  newElement(Element.STAFF_TEXT)
+          if (parametres.placerDESDessous == "1") {
+            textPousse.placement = Placement.BELOW;
+            textTire.placement = Placement.BELOW;
+            textAlt.placement = Placement.BELOW;
+          } else {
+            textPousse.placement = Placement.ABOVE;
+            textTire.placement = Placement.ABOVE;
+            textAlt.placement = Placement.ABOVE;
+          }
         } else {
           textPousse =  newElement(Element.LYRICS)
           textTire   =  newElement(Element.LYRICS)
@@ -895,28 +917,25 @@ function memoriseParametres(){
 	               var tabPossibiliteTire   = textTire.text.split("/")
 	               var tabPossibilitePousse = textPousse.text.split("/")
 	               // Répartition entre les rangs Alt, C et G
-                 // les index ia, ic et ig sont mis à 0 en tout de but de fonction
-                 // les tablesux tabRangG tabRangC et tabRangAlt sont initialisés en début de fonction
+                 // les index ia, ic et ig sont mis à 0 en tout début de fonction
+                 // les tableaux tabRangG tabRangC et tabRangAlt sont initialisés en début de fonction
 	               var i
 	               for (i = 0 ; i < tabPossibiliteTire.length ; i++) {
 	                   if (tabPossibiliteTire[i] != "")
-	                   if (tabPossibiliteTire[i].match("''")) {
-                     tabRangAlt[ia++] = "<u>" + tabPossibiliteTire[i] + "</u>"
-                     tabRangAlt[ia++] = tabPossibiliteTire[i] }
-	                   else if (tabPossibiliteTire[i].match("'")) {
-                     tabRangC[ic++] = "<u>" + tabPossibiliteTire[i] + "</u>"
-                     tabRangC[ic++] = tabPossibiliteTire[i] }
-	                   else {
+	                   if (tabPossibiliteTire[i].match("''"))
+                       tabRangAlt[ia++] = "<u>" + tabPossibiliteTire[i].substr(0,tabPossibiliteTire[i].length -2) + "</u>"
+	                   else if (tabPossibiliteTire[i].match("'"))
+                       tabRangC[ic++] = "<u>" + tabPossibiliteTire[i].substr(0,tabPossibiliteTire[i].length -1) + "</u>"
+	                   else
                      tabRangG[ig++] = "<u>" + tabPossibiliteTire[i] + "</u>"
-                     tabRangG[ig++] = tabPossibiliteTire[i] }
 	               }
 
 	               for (i = 0 ; i < tabPossibilitePousse.length ; i++) {
 	                   if (tabPossibilitePousse[i] != "")
 	                   if (tabPossibilitePousse[i].match("''"))
-	                        tabRangAlt[ia++] = tabPossibilitePousse[i]
+	                     tabRangAlt[ia++] = tabPossibilitePousse[i].substr(0,tabPossibilitePousse[i].length -2)
 	                   else if (tabPossibilitePousse[i].match("'"))
-	                        tabRangC[ic++] = tabPossibilitePousse[i]
+	                     tabRangC[ic++] = tabPossibilitePousse[i].substr(0,tabPossibilitePousse[i].length -1)
 	                   else
 	                        tabRangG[ig++] = tabPossibilitePousse[i]
 	               }
@@ -981,12 +1000,12 @@ function memoriseParametres(){
               	    textTire.offsetY   = textPousse.offsetY  = parametres.offsetY.DES
 	                  textTire.autoplace = textPousse.autoplace = true
                     // Ajoute les numéros à la tablature en placement automatique
-                    if (textAlt.text !=  "") addElement(cursor, textAlt)
+                    if (textAlt.text !=  "") cursor.add(textAlt)
                     if (textTire.text !=  "") {
                       textTire.text = "<u>" + textTire.text + "</u>"
-                      addElement(cursor, textTire)
+                      cursor.add(textTire)
                     }
-                    if (textPousse.text != "") addElement(cursor, textPousse)
+                    if (textPousse.text != "") cursor.add(textPousse)
             break
         }
         // ------------------------------------------------------------------------
@@ -995,12 +1014,12 @@ function memoriseParametres(){
         // Pour finir, on affiche le numéro de la touche dans la partition
         // pour les tablatures Corgeron et CADB, ,es DES ont déjà été ajoutées
         if (parametres.typeTablature != "DES"){
-          if (textAlt.text !=  "") addElement(cursor, textAlt)
+          if (textAlt.text !=  "") cursor.add(textAlt)
           if (textTire.text !=  "") {
               // textTire.text = "<u>" + textTire.text + "</u>"
-              addElement(cursor, textTire)
+              cursor.add(textTire)
           }
-          if (textPousse.text != "") addElement(cursor, textPousse)
+          if (textPousse.text != "") cursor.add(textPousse)
         }
         // ------------------------------------------------------------------------
 }
@@ -1071,6 +1090,7 @@ function doTablature() {
                     var annotation = cursor.segment.annotations[aCount];
                     while (annotation) {
                            if (annotation.type == Element.HARMONY){
+                             if (annotation.text != "%")
                                 accordMg = annotation.text.toUpperCase()
                            }
                            annotation = cursor.segment.annotations[++aCount];
@@ -1119,6 +1139,7 @@ function doTablature() {
           inputTextoffsetYCorgeronC.text = parametres.offsetY.CorgeronC
           inputTextoffsetYCorgeronG.text = parametres.offsetY.CorgeronG
           cbSoulignerTireCADB.checked = (parametres.soulignerTireCADB == "1")
+          cbPlacerDESDessous.checked = (parametres.placerDESDessous == "1")
 
           //------------------------------------------------------------------------------
       }
