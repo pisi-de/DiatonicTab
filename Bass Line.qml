@@ -34,6 +34,7 @@
          v1.01.06.20200328 :  Relookage de la fenêtre
          v1.01.06.20200328.1407 :  Ajout du paramètre offsetY
          v1.01.06.20200330.1001 : débug sélection
+         v1.01.06.20200419.1711 : homogénéisation avec addFKey
 
 ----------------------------------------------------------------------------  */
  import QtQuick 2.2
@@ -45,7 +46,7 @@
 
 
  MuseScore {
- version: "1.01.06.20200330.1001"
+ version: "1.01.06.20200419.1711"
  description: "Write Bass/Chord line on a diatonic accordion tablature"
  menuPath: "Plugins.DiatonicTab.BassLine"
  pluginType: "dialog"
@@ -227,8 +228,8 @@ property var fullScore:true
                                   }
 
         }
-      } // GroupBox
- } // GridLayout
+      } // GridLayout
+ } // GroupBox
  //------------------------------------------------
  // Anacrouze et accords complets
  //------------------------------------------------
@@ -299,8 +300,12 @@ property var fullScore:true
               parametres.thePattern = inputTextPattern.text
               parametres.offsetY    = inputTextoffsetY.text
              curScore.startCmd();
-             // Gestion du curseur global
-              // -----------------------------------------------------------------------
+             // -----------------------------------------------------------------------
+             // Il semble que la lélection se perde pendant la durée du travail. Il est donc
+             // néssessaire d'utiliser une gestion golable du curseur
+             // Le curseur renviendra en début de sélection en repartant du début et en avancant
+             // jusqu'à starTick qui aura été mémorisé ici.
+             // -----------------------------------------------------------------------
               // Cherche à savoir s'il s'agit de la partition entière ou d'une sélection
               globalCursor = curScore.newCursor()
               globalCursor.staffIdx = 1                     // On ne traite que la portée numéro 2
@@ -536,15 +541,21 @@ property var fullScore:true
                 // Selon le choix "BaBa" ou "Baa" ou "B-aB-a" ou etc ...
  //               console.log("Basse ou Accord : " + thePattern[temps] + " Temps : " + temps)
                 switch (thePattern[temps]) {
-                          case "B" :
-                               basse.text = basseAJouer
-                               break
-                          case "a":
-                               basse.text = accordAJouer
-                               break
-                          default:
-                               basse.text = thePattern[temps]
-                               break
+                case "A": case "C" :    // Basse+Accord Bass+Chord
+                        basse.text = basseAJouer+accordAJouer;
+                        break;
+                  case "B" : case "b":  // Basse seule
+                       basse.text = basseAJouer
+                       break
+                  case "a": case "c":   // Accord seul (Chord only)
+                       basse.text = accordAJouer
+                       break
+                  case "-":
+                       basse.text = ""
+                       break
+                  default:
+                       basse.text = thePattern[temps]
+                       break
                 }
  //               console.log("A afficher : " + basse.text)
                 globalCursor.add(basse)
