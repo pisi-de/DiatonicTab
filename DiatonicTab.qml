@@ -115,9 +115,9 @@ MuseScore {
    height: 640
 
 //---------------------------------------------------------------
-// Parametres, variables globales à tout le plugin. Ces données sont
-// mémorisées dans le fichier DiatonicTab.json. Elles sont présentes
-// ici au cas où le fichier json soit absent
+// Parameters, global variables for the whole plugin. These data are
+// stored in the DiatonicTab.json file. They are here
+// here in case the json file is missing
 //---------------------------------------------------------------
 property var parametres: {
          "offsetY" : { "CADBT" : 5.85,
@@ -126,38 +126,38 @@ property var parametres: {
                        "CorgeronAlt": 2.25,
                        "CorgeronC": 2.25,
                        "CorgeronG": 2.25,
-                      },           // Décallage vers le bas dans la partition
-         "sensFa"  : 3,               // 1 Fa Tirés  / 2 Fa Poussés / 3 Fa dans les deux sens
-         "sensSol" : 3,               // 1 Sol Tirés  / 2 Sol Poussés / 3 Sol dans les deux sens
-         "typeJeu" : 3,               // 1 C privilégié  / 2 G privilégié / 3 Jeu croisé
-         "typePossibilite": 2,        // 2 Afficher toutes les possibilités  / 1 n'afficher qu'une seule possibilité
-         "typeTablature":  "DES",     // tablature CADB ou Corgeron ou DES (mono ligne)
-         "placerDESDessous" : 1,      // La tabmature DES vas dessous la portée
-         "clavierMD"  : {},           // Contenu du clavier main droite
-         "clavierMG" : {},            // Contenu du clavier main gauche
-         "soulignerTireCADB" : 1,     // Souligner les tirés en C.A.D.B.
+                      },           // Shift down in score
+         "sensFa"  : 3,               // 1 Fa Drawn  / 2 Fa Pushed / 3 Fa in both ways
+         "sensSol" : 3,               // 1 Sol Drawn  / 2 Sol Pushed / 3 Sol in both ways
+         "typeJeu" : 3,               // 1 C privileged  / 2 G privileged / 3 Crossplay
+         "typePossibilite": 2,        // 2 Show all possibilities  / 1 display only one possibility
+         "typeTablature":  "DES",     // tablature CADB or Corgeron or DES (single line)
+         "placerDESDessous" : 1,      // The DES tabmature goes below the staff
+         "clavierMD"  : {},           // Contents of the right-hand keyboard
+         "clavierMG" : {},            // Contents of the left-hand keyboard
+         "soulignerTireCADB" : 1,     // Underline drawn in C.A.D.B.
          //-----------------------------------------------------
          // Set here the parametres.language : FR = French, EN = English
-         "lang": "FR",                // Langue de l'utilisateur
+         "lang": "FR",                // User language
 }
 //---------------------------------------------------------------
-// Descripteurs des fichiers : parametres et claviers
+// File descriptors: parameters and keyboards
 //---------------------------------------------------------------
-// Fichiers JSON pour la mémorisation des parametres
+// JSON files for storing parameters
 FileIO {
         id: myParameterFile
         source: homePath() + "/DiatonicTab.json"
         onError: console.log(msg)
 }
-// Fichiers RH_*.keyboard pour le clavier main droite
-// Fichiers LH_*.keyboard pour le clavier main gauche
+// RH_*.keyboard files for the right-hand keyboard
+// LH_*.keyboard files for the left-hand keyboard
 FileIO {
-    // Fichiers format JSON pour la mémorisation des claviers
+    // JSON format files for memorizing keyboards
     id: fichierClavier
     onError: console.log(msg)
 }
 // ------------------------------------------------------
-// Boite de dialogue pour le choix du fichier clavier main droite
+// Dialog box for choosing the right-hand keyboard file
 // ------------------------------------------------------
 FileDialog {
       id: fileDialogClavierMD
@@ -174,9 +174,9 @@ FileDialog {
                   fichierClavier.source = fileUrl.toString().substring(fileUrl.toString().charAt(9) === ':' ? 8 : 7)
                 else
                   fichierClavier.source = fileUrl
-                // Lecture du plan de clavier
+                // Reading the keyboard plan
                 parametres.clavierMD = JSON.parse(fichierClavier.read())
-                // Met à jour l'affichage dans la boîte de dialogue
+                // Updates the display in the dialog
                 textDescriptionClavierMD.text = parametres.clavierMD.description
         }
         onRejected: {
@@ -185,7 +185,7 @@ FileDialog {
         }
 }
 // ------------------------------------------------------
-// Boite de dialogue pour le choix du fichier clavier main gauche
+// Dialog box for choosing the left-hand keyboard file
 // ------------------------------------------------------
 FileDialog {
         id: fileDialogClavierMG
@@ -202,9 +202,9 @@ FileDialog {
                     fichierClavier.source = fileUrl.toString().substring(fileUrl.toString().charAt(9) === ':' ? 8 : 7)
                   else
                     fichierClavier.source = fileUrl
-                  // Lecture du plan de clavier
+                  // Reading the keyboard plan
                   parametres.clavierMG = JSON.parse(fichierClavier.read())
-                  // Met à jour l'affichage dans la boîte de dialogue
+                  // Updates the display in the dialog
                   textDescriptionClavierMG.text = parametres.clavierMG.description
           }
           onRejected: {
@@ -214,7 +214,7 @@ FileDialog {
   }
 
 // -------------------------------------------------------------------
-// Description de la fenêtre de dialogue
+// Description of the dialog window
 //--------------------------------------------------------------------
  GridLayout {
       id: 'mainLayout'
@@ -234,7 +234,7 @@ Label {
       }
 
 //------------------------------------------------
-// Type d'accordéon et plan de clavier Main DROITE
+// Type of accordion and keyboard layout RIGHT hand
 //------------------------------------------------
 GroupBox {
   Layout.columnSpan : 3
@@ -254,7 +254,7 @@ GroupBox {
                                    qsTr("Used RH Keyboard : ")
             }
       // -----------------------------------------------
-      // Choix du clavier Main droite
+      // Right hand keyboard choice
       Text {
                  id : textDescriptionClavierMD
                  elide : Text.ElideNone
@@ -268,13 +268,13 @@ GroupBox {
             text: (parametres.lang == "FR") ? qsTr(" Changer Clavier MD ") :
                                     qsTr(" Change RH Keyboard ")
             onClicked: {
-                // Choix du clavier parmi les fichiers RH_*.keyboard
+                // Choice of the keyboard among the RH_*.keyboard files
                 fileDialogClavierMD.open()
             }
       }
       // -----------------------------------------------
       // -----------------------------------------------
-      // Choix du clavier Main Gauche
+      // Choice of Left Hand keyboard
       Label {
              horizontalAlignment: Qt.AlignRigth
              text:  (parametres.lang == "FR") ? qsTr("Clavier MG utilisé : ") :
@@ -293,16 +293,16 @@ GroupBox {
             text:  (parametres.lang == "FR") ? qsTr(" Changer Clavier MG ") :
                                     qsTr(" Change LH Keyboard ")
             onClicked: {
-                // Choix du clavier parmi les fichiers LH_*.keyboard
+                // Choice of keyboard from LH_*.keyboard files
                 fileDialogClavierMG.open()
             }
       }
     }   // GridLayout
-}  // GroupBox des plans de clavier
+}  // Keyboard Maps GroupBox
 // -----------------------------------------------
 
 //-------------------------------------------------------------------------
-// Sens des mesures de Sol   1 = tiré / 2 = poussé / 3 = dans les deux sens
+// Floor measurement direction 1 = pulled / 2 = pushed / 3 = both ways
 //-------------------------------------------------------------------------
 GroupBox {
     title:  (parametres.lang=="FR")?qsTr("Sens du soufflet pour passages en Sol"):
@@ -336,9 +336,9 @@ GroupBox {
             }
         }
     } // RowLayout
-} // GroupBox du choix sens Sol
+} // GroupBox of the Ground direction choice
 //------------------------------------------------
-// Sens des mesures de Fa   1 = tiré / 2 = poussé / 3 = dans les deux sens
+// Direction of F bars 1 = pulled / 2 = pushed / 3 = both ways
 //------------------------------------------------
 GroupBox {
     title: (parametres.lang=="FR")?qsTr("Sens du souffler pour les passages en Fa"):
@@ -373,9 +373,9 @@ GroupBox {
             }
         }
     } // RowLayout
-} // GroupBox du choix sens Fa
+} // Fa direction choice groupbox
 //------------------------------------------------
-// Simple ou double possibilité
+// Single or double option
 //------------------------------------------------
 GroupBox {
     title: (parametres.lang=="FR")?qsTr("Lorsque plusieurs touches correspondent à une même note"):
@@ -403,9 +403,9 @@ GroupBox {
             }
         }
     } // RowLayout
-} // GroupBox Nombre de possibilités
+} // GroupBox Number of possibilities
 //------------------------------------------------
-// Sens type de jeu   1 = C / 2 = G / 3 = Croisé
+// Meaning type of game 1 = C / 2 = G / 3 = Crossed
 //------------------------------------------------
 GroupBox {
     title: (parametres.lang=="FR")?qsTr("Jeu Tiré/Poussé ou Croisé"):qsTr("Crossed or Push/Pull playing")
@@ -439,9 +439,9 @@ GroupBox {
             }
         }
     } // RowLayout
-} // GroupBox Type de jeu
+} // GroupBox Game type
 //------------------------------------------------
-// Type de tablature
+// Type of tablature
 //------------------------------------------------
 GroupBox {
     Layout.columnSpan : 3
@@ -629,7 +629,7 @@ GroupBox {
                   }
               } // RowLayout
           } // GroupBox DES
-    } // GridLayout du choix type de tablature
+    } // GridLayout of the tablature type choice
   } // GroupBox
 
 //-----------------------------------------------
@@ -644,13 +644,13 @@ RowLayout {
          isDefault: true
          text: qsTr("OK")
          onClicked: {
-            // Mémorise les parametres pour la prochaine fois
+            // Remember settings for next time
             memoriseParametres()
-            // Ecrit la tablature
+            // Write the tablature
             curScore.startCmd()
             doTablature()
             curScore.endCmd()
-            // fin de séquence
+            // end of sequence
             Qt.quit();
          }
       }
@@ -700,9 +700,9 @@ function addElement(cursor, element) {
 }
 
 // -----------------------------------------------------------------------------
-// Fonction de mémorisation des Parametres
-// Cette fonction replace les éléments de la boite de dialogue dans les Parametres
-// ce qui n'est pas toujours fait lorsqu'on clique sur OK ou Annuler
+// Parameter memory function
+// This function replaces the elements of the dialog box in the Parameters
+// which is not always done when clicking OK or Cancel
 // -----------------------------------------------------------------------------
 function memoriseParametres(){
   parametres.offsetY.CADBP     = inputTextoffsetYCADBP.text
@@ -717,34 +717,34 @@ function memoriseParametres(){
 
 }
 // ------------------------------------------------------------------------------
-// fonction addTouche(cursor, notes, accord)
-// Cette fonction ajoute le numéro de la touche à actionner en fonction de l'accord main gauche
-// Entrée : curseur positionné à l'endroit où il faut insérer le numéro de la touche
-//              notes à traiter, cette fonction ne traite tout le CHORD
-//              le dernier accord main gauche rencontré pour choisir entre tiré et poussé lorsque c'est possible
-// Si la note n'existe pas en poussé mais qu'elle existe en tiré, celle-ci est proposée quelque soit l'accord (A, F, F#))
-// et réciproquement
-// Les critères définis par l'utilisateur dans la boite de dialogue sont utilisés ici
+// function addKey(cursor, notes, chord)
+// This function adds the number of the key to be pressed according to the left hand chord
+// Enter: cursor positioned at the place where the key number must be inserted
+//              notes to be processed, this function only processes the entire CHORD
+//              the last left hand chord encountered to choose between pulled and pushed when possible
+// If the note does not exist in pushing but it exists in pulling, this one is proposed whatever the chord (A, F, F#)
+// and reciprocally
+// The criteria defined by the user in the dialog box are used here
 //------------------------------------------------------------------------------
  function addTouche(cursor, notes, accord) {
 
      var textPousse, textTire, textAlt
-     var numNote                // Compteur sur les notes du CHORD
-     var tabRangC = []          // Pour le système Corgeron, on crée 3 tableaux de Rang
+     var numNote                // Counter on the notes of the CHORD
+     var tabRangC = []          // For the Corgeron system, we create 3 Rank tables
      var tabRangG = []
      var tabRangAlt = []
-     var ia = 0, ic = 0, ig = 0 // et trois index pour placer les numéros de touche
-     var tabRangT = []          // Pour le système CADB, on crée 2 tableaux
+     var ia = 0, ic = 0, ig = 0 // and three indexes to place the key numbers
+     var tabRangT = []          // For the CADB system, we create 2 tables
      var tabRangP = []
-     var iT = 0, iP = 0         // et deux index pour placer les numéros de touche
+     var iT = 0, iP = 0         // and two indexes to place the key numbers
 
      // ------------------------------------------------------------------------
-     // Boucle sur chaque note de l'accord
+     // Loop on each note of the chord
      // ------------------------------------------------------------------------
      for (numNote = 0;  numNote < notes.length; numNote ++){
         var note = notes[numNote]
         // ------------------------------------------------------------------------
-        // Choix entre STAFF_TEXT et LYRICS : Si tablature sur 2 lignes, LYRICS, sinon STAFF
+        // Choice between STAFF_TEXT and LYRICS: If tablature on 2 lines, LYRICS, otherwise STAFF
         //------------------------------------------------------------------------------
         if (parametres.typeTablature=="DES") {
           textPousse =  newElement(Element.STAFF_TEXT)
@@ -768,11 +768,11 @@ function memoriseParametres(){
         textPousse.text = textTire.text = textAlt.text = ""
 
         // ------------------------------------------------------------------------
-        // Nettoyage des accords enrichis, transformation en accord de base
+        // Cleaning of enriched chords, transformation into basic chord
         //------------------------------------------------------------------------------
-        // Supression de la basse dans la notation Am/C
+        // Removal of bass in Am/C notation
            accord = accord.split("\/")[0]
-        // Transforme les bémols en dièses
+        // Turn flats into sharps
            var transBemol = { "AB":"G#","BB":"A#","CB":"B","DB":"C#","EB":"D#","FB":"E","GB":"F#" }
            if (accord.match(/^[A-G]B/)) accord = transBemol[accord[0]+"B"]
         // Supression de M m - sus add 7 6 9 etc dans Am7(b5)
@@ -782,37 +782,37 @@ function memoriseParametres(){
         // ------------------------------------------------------------------------
 
         // ------------------------------------------------------------------------
-        // Fabrication par calcul du nom de la note de C0 à B9
+        // Manufacture by calculating the name of the note from C0 to B9
         //------------------------------------------------------------------------------
-        // note.pitch contient le numéro de la note dans l'univers MuseScore.
+        // note.pitch contains the note number in the MuseScore universe.
          var noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
-         var octave = Math.floor(note.pitch / 12) - 1      // Numéro de l'octave
-         var noteName = noteNames[note.pitch % 12]         // Cherche la note dans le tableau du nom des notes
-         if (noteName.match("#"))                          // Ajoute l'octave à ce nom de note (conservation du #)
+         var octave = Math.floor(note.pitch / 12) - 1      // octave number
+         var noteName = noteNames[note.pitch % 12]         // Look for the note in the table of note names
+         if (noteName.match("#"))                          // Adds the octave to this note name (keeping the #)
                noteName = noteName[0] + octave + noteName[1]
           else
                noteName += octave
         // ------------------------------------------------------------------------
 
         // ------------------------------------------------------------------------
-        // Récupération du numéro des touches diato à afficher selon le modèle de clavier choisi
+        // Retrieval of the number of diato keys to display according to the chosen keyboard model
         //------------------------------------------------------------------------------
         var noBouton = parametres.clavierMD[noteName]
         if (!noBouton) noBouton = ""
         // ------------------------------------------------------------------------
 
         // ------------------------------------------------------------------------
-        // Variable pour le jeu en Tiré/Poussé
+        // Variable for Pull/Push play
         var indexDoubleSens = 0
 
         // ------------------------------------------------------------------------
-        // Recherche des boutons Tirés et Poussés, formatage du numéro des touches
-        // la variable noBouton peut contenir :
-        // xP ou xT pour une seule touche X en Tiré ou en Poussé
-        // xP/xT ou xT/xP pour deux touches en Tiré Poussé
-        // xP/yP ou xT/yT pour deux touches en Poussé Tiré
-        // xP/yP/zT pour trois touches , etc...
-        var tabBouton = noBouton.split("/")             // Découpage selon les slash
+        // Finding Pulled and Pushed Buttons, Key Number Formatting
+        // the noButton variable can contain :
+        // xP or xT for a single X key in Pull or Push
+        // xP/xT or xT/xP for two keys in Pull Push
+        // xP/yP or xT/yT for two push-pull keys
+        // xP/yP/zT for three keys, etc...
+        var tabBouton = noBouton.split("/")             // Cutting according to slashes
         var i = 0
         for (i = 0 ; i < tabBouton.length ; i++) {
                if (tabBouton[i].match("P")) textPousse.text += tabBouton[i].replace("P","") + "/"
@@ -823,12 +823,12 @@ function memoriseParametres(){
         // ------------------------------------------------------------------------
 
         // ------------------------------------------------------------------------
-        // Type de Jeu croise, tiré/poussé
-        // Si le jeu est en croisé, on tient compte des accords pour choisir le sens
-        // Si le jeu est en tiré poussé, on ne tient pas compte des accords
+        // Game type cross, pull/push
+        // If the game is crossed, we take into account the chords to choose the direction
+        // If the game is pushed, we do not take into account the chords
            switch (parametres.typeJeu) {
 
-           case 3 : // Jeu en croisé, on tient compte des accords
+           case 3 : // Crossplay, agreements are taken into account
                 if (parametres.clavierMG["Tire"].match("-"+accord+"-"))
         					if (textTire.text != "")
         						textPousse.text    = "";
@@ -841,26 +841,26 @@ function memoriseParametres(){
                  {
                     if (accord.match(/F/i)) {
                       switch (parametres.sensFa) {
-                        case 1 :          // Fa (Sol/Do)  en tiré uniquement
-                               if (textTire.text != "") textPousse.text = ""; // supression du texte poussé
+                        case 1 :          // Fa (Sol/Do)  pull only
+                               if (textTire.text != "") textPousse.text = ""; // remove pushed text
                         break
-                        case 2 :          // Fa (Sol/Do)  en poussé uniquement
-                               if (textPousse.text != "") textTire.text = "";  // supression du texte tiré
+                        case 2 :          // Fa (Sol/Do)  push only
+                               if (textPousse.text != "") textTire.text = "";  // remove of pulled text
                         break
-                        case 3 : // Fa dans les deux sensSol
+                        case 3 : // Fa in both sensSol
                         break
                       }
                     }
                     if (accord.match(/G/i))
                     {
                       switch (parametres.sensSol) {
-                        case 1 :          // Sol (Sol/Do)  en tiré uniquement
-                               if (textTire.text != "") textPousse.text      = ""; // supression du texte poussé
+                        case 1 :          // Sol (Sol/Do)  pull only
+                               if (textTire.text != "") textPousse.text      = ""; // remove pushed text
                         break
-                        case 2 :          // Sol (Sol/Do)  en poussé uniquement
-                                if (textPousse.text != "") textTire.text      = "";  // supression du texte tiré
+                        case 2 :          // Sol (Sol/Do)  push only
+                                if (textPousse.text != "") textTire.text      = "";  // remove of pulled text
                         break
-                        case 3 :            // Sol dans les deux sensSol
+                        case 3 :          // Sol in both sensSol
 
                         break
                       }
@@ -868,9 +868,9 @@ function memoriseParametres(){
                  }
 
            break;
-           // jeu en tiré poussé sur le rang 2 (de C sur un GC)
+           // pull game pushed on row 2 (from C on a GC)
            case 2 :
-                 //Si double possibilité , on ne garde que le rang 2
+                 //If double possibility, we only keep rank 2
                  if (textTire.text.match("/"))
                     textTire.text = textTire.text.split("/")[(textTire.text.match(/'$/))?1:0]
 	         if (textPousse.text.match("/"))
@@ -879,13 +879,13 @@ function memoriseParametres(){
 	         if (textPousse.text.match("'")  && (!textTire.text.match("'"))) textTire.text = ""
 	         indexDoubleSens = (textTire.text.match(/\/.*'$/) || textPousse.text.match(/\/.*'$/)) ? 1 : 0
            break;
-           // jeu en tiré poussé sur le rang 1 (de G sur un GC)
+           // pulled game pushed on row 1 (from G on a GC)
            case 1 :
-                 //Si double possibilité en tiré, on ne garde que le rang de 1 (pas de ')
+                 //If double possibility drawn, we only keep the rank of 1 (no ')
                  if (textTire.text.match("/"))
                         textTire.text   = textTire.text.split("/")[(textTire.text.match(/'$/))?0:1]
 
-                 //Si double possibilité en poussé, on ne garde que le rang de 1 (pas de ')
+                 //If double possibility in pushing, we only keep the rank of 1 (no ')
                  if (textPousse.text.match("/"))
 	                textPousse.text = textPousse.text.split("/")[(textPousse.text.match(/'$/))?0:1]
 
@@ -898,12 +898,12 @@ function memoriseParametres(){
 
            break;
            }
-         // Fin du swith "type de jeu"
+         //End of the "game type" switch
          // ------------------------------------------------------------------------
 
         // ------------------------------------------------------------------------
-	   // Gestion des doubles possibilités pour les notes en double sur le clavier
-	   // Si on ne veut qu'une seule possibilité, on ne garde que la première définie dans le tableau des touches
+	   // Management of double possibilities for duplicate notes on the keyboard
+	   // If we want only one possibility, we keep only the first one defined in the table of keys
 	   if (parametres.typePossibilite == 1) {
 	        if (textTire.text.match("/"))   textTire.text   = textTire.text.split("/")[indexDoubleSens]
 	        if (textPousse.text.match("/")) textPousse.text = textPousse.text.split("/")[indexDoubleSens]
@@ -911,14 +911,14 @@ function memoriseParametres(){
     // ------------------------------------------------------------------------
 
     // ------------------------------------------------------------------------
-        // Gestion du positionnement selon le nombre de lignes de la tablature
+        // Management of the positioning according to the number of lines of the tablature
 	   switch(parametres.typeTablature) {
 	         case "Corgeron":
 	               var tabPossibiliteTire   = textTire.text.split("/")
 	               var tabPossibilitePousse = textPousse.text.split("/")
-	               // Répartition entre les rangs Alt, C et G
-                 // les index ia, ic et ig sont mis à 0 en tout début de fonction
-                 // les tableaux tabRangG tabRangC et tabRangAlt sont initialisés en début de fonction
+	               // Distribution between Alt, C and G ranks
+                 // the ia, ic and ig indexes are set to 0 at the very start of the function
+                 // the arrRangG arrRangC and arrRangAlt arrays are initialized at the start of the function
 	               var i
 	               for (i = 0 ; i < tabPossibiliteTire.length ; i++) {
 	                   if (tabPossibiliteTire[i] != "")
@@ -939,7 +939,7 @@ function memoriseParametres(){
 	                   else
 	                        tabRangG[ig++] = tabPossibilitePousse[i]
 	               }
-                 // Lorsqu'on atteint la dernière note de l'accord, on ventille les informations
+                 // When we reach the last note of the chord, we break down the information
                  if (numNote == notes.length-1){
                   textTire.autoplace = textPousse.autoplace = textAlt.autoplace = false
 	                 textAlt.offsetY     = parametres.offsetY.CorgeronAlt
@@ -974,11 +974,10 @@ function memoriseParametres(){
   	               }
                  }
 	          break
-            case "CADB":                  // Collectif des Accordéons Diatoniques de Bretagne
+            case "CADB":                  // Collective of Diatonic Accordions of Brittany
                 tabRangT[iT++] = textTire.text
                 tabRangP[iP++] = textPousse.text
-                // Lorsque c'est la dernière note de l'accord, on empile toutes Les
-                // notes à afficher dans textTire.text et textPousse.text
+                // When it is the last note of the chord, we stack all the notes to display in textTire.text and textPousse.text
                 if (numNote == notes.length-1){
                     textTire.text = tabRangT[0]
                     for (var i = 1; i<tabRangT.length; i++)
@@ -999,7 +998,7 @@ function memoriseParametres(){
             case "DES":                         // Rémi Sallard Style
               	    textTire.offsetY   = textPousse.offsetY  = parametres.offsetY.DES
 	                  textTire.autoplace = textPousse.autoplace = true
-                    // Ajoute les numéros à la tablature en placement automatique
+                    // Adds numbers to auto-placed tablature
                     if (textAlt.text !=  "") cursor.add(textAlt)
                     if (textTire.text !=  "") {
                       textTire.text = "<u>" + textTire.text + "</u>"
@@ -1009,10 +1008,10 @@ function memoriseParametres(){
             break
         }
         // ------------------------------------------------------------------------
-      }   // Fin de la boucle for(numNote = 0; numNote<notes.length; numNote++)
+      }   // End of the loop for(numNote = 0; numNote<notes.length; numNote++)
         // ------------------------------------------------------------------------
-        // Pour finir, on affiche le numéro de la touche dans la partition
-        // pour les tablatures Corgeron et CADB, ,es DES ont déjà été ajoutées
+        // Finally, we display the number of the key in the score
+        // for the Corgeron and CADB tablatures, the DES have already been added
         if (parametres.typeTablature != "DES"){
           if (textAlt.text !=  "") cursor.add(textAlt)
           if (textTire.text !=  "") {
@@ -1026,47 +1025,47 @@ function memoriseParametres(){
 
 
 // ---------------------------------------------------------------------
-// Fonction doTablature
+// doTablature function
 //
-// Fonction principale appelée par le click que le bouton OK
+// Main function called by the click of the OK button
 //----------------------------------------------------------------------
 function doTablature() {
 
-      var myScore = curScore,                  // Partition en cours
-          cursor = myScore.newCursor(),        // Fabrique un curseur pour se déplacer dans les mesures
-          startStaff,                          // Début de partition ou début de sélection
-          endStaff,                            // Fin de partition ou fin de sélection
-          endTick,                             // Numéro du dernier élément de la partition ou de la sélection
-          staff = 0,                           // numéro de de portée dans partition
-          accordMg,                            // Détermine si on est en Poussé ou en Tiré lorsque c'est possible
-          fullScore = false;                   // Partition entière ou sélection
+      var myScore = curScore,                  // Current score
+          cursor = myScore.newCursor(),        // Make a slider to move through the measures
+          startStaff,                          // Start of score or start of selection
+          endStaff,                            // End of partition or end of selection
+          endTick,                             // Number of the last element of the score or of the selection
+          staff = 0,                           // staff number in score
+          accordMg,                            // Determines if we are in Push or Pull when possible
+          fullScore = false;                   // Entire score or selection
 
-      // Cherche les portées, on ne travaillera pas sur la dernière portée (en général clé de Fa, Basses et Accords)
-      // dans le cas de tablature DES, on traite toutes les portées moins 1
-      // dans le cas Corgeron ou CADB on ne traite que la portée 1 et on écrit sur la porté 2 (si elle existe)
+      //Look for the staves, we will not work on the last staff (usually bass clef, basses and chords)
+      // in the case of DES tablature, all staves minus 1 are processed
+      // in the Corgeron or CADB case, only staff 1 is processed and staff 2 is written (if it exists)
       var nbPortees = (parametres.typeTablature == "DES") ? myScore.nstaves : (myScore.nstaves >= 2) ? 2 : 1
 
-      // pas d'accord main gauche à priori
+      // do not agree left hand a priori
       accordMg = "zzz"
 
       // ---------------------------------------------------------------------
-      // Boucle sur chacune des portées sauf la dernière s'il y en a plusieurs
+      // Loop on each of the staves except the last one if there are several
       // ---------------------------------------------------------------------
       do {
-            cursor.voice    =  0                          // Si CADB ou Corgeron, voix 1 de la porté 1
+            cursor.voice    =  0                          // If CADB or Corgeron, voice 1 of staff 1
             cursor.staffIdx =  staff
 
-            // Gestion d'une sélection ou du traitement de toute la partition
+            // Management of a selection or the processing of the entire partition
 
-            cursor.rewind(Cursor.SELECTION_START)           // rembobine au début de la sélection
-            if (!cursor.segment) { // pas de sélection
+            cursor.rewind(Cursor.SELECTION_START)           // rewind to start of selection
+            if (!cursor.segment) { // no selection
                   fullScore = true;
-                  startStaff = 0;                           // commence à la première mesure
-                  endStaff = curScore.nstaves - 1;          // et termine à la dernière
+                  startStaff = 0;                           // starts at the first bar
+                  endStaff = curScore.nstaves - 1;          // and ends at the last
             } else {
-                  startStaff = cursor.staffIdx;             // commence au début de la sélection
-                  cursor.rewind(2);                         // passe derrière le dernier segment et fixe tick = 0
-                  if (cursor.tick === 0) {                  // ceci survient lorsque la sélection contient la dernière mesure
+                  startStaff = cursor.staffIdx;             // starts at the beginning of the selection
+                  cursor.rewind(2);                         // goes behind the last segment and sets tick = 0
+                  if (cursor.tick === 0) {                  // this happens when the selection contains the last measure
                        endTick = curScore.lastSegment.tick + 1;
                   } else {
                       endTick = cursor.tick;
@@ -1074,19 +1073,19 @@ function doTablature() {
                  endStaff = cursor.staffIdx;
             }
 
-            if (fullScore) {                          // si pas de sélection
-                  cursor.rewind(Cursor.SCORE_START)   // rembobine au début de la partition
-             } else {                                 // si sélection
-                 cursor.rewind(Cursor.SELECTION_START)// rembobine au début de la sélection
+            if (fullScore) {                          // if no selection
+                  cursor.rewind(Cursor.SCORE_START)   // rewind to start of score
+             } else {                                 // if selection
+                 cursor.rewind(Cursor.SELECTION_START)// rewind to start of selection
              }
 
              // -------------------------------------------------------------------
-             // Boucle pour chaque élément de la portée ou de la sélection en cours
+             // Loop for each element of the current staff or selection
              // -------------------------------------------------------------------
              while (cursor.segment && (fullScore || cursor.tick < endTick))  {
                     var aCount = 0;
 
-                    // Recherche des accords main gauche (genre Am ou Em ou E7 ...)
+                    // Search for left hand chords (like Am or Em or E7 ...)
                     var annotation = cursor.segment.annotations[aCount];
                     while (annotation) {
                            if (annotation.type == Element.HARMONY){
@@ -1096,37 +1095,37 @@ function doTablature() {
                            annotation = cursor.segment.annotations[++aCount];
                     }
 
-                  // Si le curseur pointe sur une à plusieurs notes jouées simultanément
+                  // If the cursor points to one or more notes played simultaneously
                   if (cursor.element && cursor.element.type == Element.CHORD) {
                         var notes = cursor.element.notes
-                        // On envoie toutes les notes du CHORD
+                        // We send all the notes of the CHORD
                             addTouche(cursor, notes, accordMg)
                   } // end if CHORD
 
-                  cursor.next() //Element suivant
+                  cursor.next() //Next item
 
-             } // fin du while cursor.segment et (fullScore || cursor.tick < endTick)
+             } // end of while cursor.segment and (fullScore || cursor.tick < endTick)
 
-             staff+=1 // Portée suivante
+             staff+=1 // Next staff
 
       } while ((parametres.typeTablature == "DES")
             && (staff < nbPortees-1)
-            && fullScore)  // fin du for chaque portée sauf si sélection
+            && fullScore)  // end of the for each staff unless selected
 
-       // Rappel : on ne traite pas la dernière portée qui est probablement en clé de fa,
-       // avec basses et accords. Pour la traiter quand même, il suffit de la sélectionner
+        // Reminder: we do not process the last staff which is probably in bass clef,
+        // with basses and chords. To process it anyway, simply select it
 
-  }   // Fin de la fonction doTablature
+  }   // End of the doTablature function
   //-------------------------------------------------------
-  // Initialisation du plugin
+  // Plugin initialization
   //-------------------------------------------------------
      onRun: {
 debug("parametres.lang : " + parametres.lang)
-          if (!curScore) Qt.quit();   // Si pas de partition courrante, sortie du plugin
+          if (!curScore) Qt.quit();   // If no current partition, plugin exit
           if (typeof curScore === 'undefined')  Qt.quit();
 
           //------------------------------------------------------------------------------
-          // Lecture du fichier de parametres
+          // Reading the parameter file
           //------------------------------------------------------------------------------
           parametres = JSON.parse(myParameterFile.read())
           //------------------------------------------------------------------------------
