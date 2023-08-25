@@ -18,13 +18,13 @@
 //=============================================================================
 
 //--------------------------------------------------------------------------
-/* Ce plugin ajoute le numéro des touches pour accordéon diatonique
-    afin de créer une forme très simplifiée de tablature
-    Ce plugin utlise le textes de paroles pour mettre les numéros de touches
-    afin de pouvoir aligner verticalement différement les tirés et les poussés
+/* This plugin adds the number of keys for diatonic accordion
+     to create a very simplified form of tablature
+     This plugin uses the lyrics text to put the key numbers
+     in order to be able to vertically align pulls and pushes differently
 
-  Auteur : Jean-Michel Bencetti
-  Version courrante : 1.04
+  Author : Jean-Michel Bencetti
+  Current version : 1.06
   Date : v1.00 : 2019-06-13 : développement initial
          v1.02 : 2019-09-02 : tient compte des accords main gauche pour proposer les notes en tiré ou en poussé
          v1.03 : 2019-10-11 : ajoute la possibilité de ne traiter que des mesures sélectionnées
@@ -106,7 +106,7 @@ MuseScore {
 
    menuPath: "Plugins.DiatonicTab.Tablature"
    requiresScore: true
-   version: "1.06.05.20230823.2147"
+   version: "1.06.05.20200623.0945"
    pluginType: "dialog"
 
    property int margin: 10
@@ -1121,7 +1121,7 @@ function doTablature() {
   // Initialisation du plugin
   //-------------------------------------------------------
      onRun: {
-
+debug("parametres.lang : " + parametres.lang)
           if (!curScore) Qt.quit();   // Si pas de partition courrante, sortie du plugin
           if (typeof curScore === 'undefined')  Qt.quit();
 
